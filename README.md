@@ -365,3 +365,156 @@ Let's ensure your scaled environment can securely touch the infrastructure manag
 telnet 192.168.1.1
 ```
 4. Authenticate using your brand-new user identity: jane.smith with password SecureCto789!.
+
+---
+
+### 🔑 How to Unlock Admin Mode for Jane
+Whenever an administrator wants to make changes, the switch requires the master supervisor password.
+1. At that blank Password: line, type your master switch code:
+```
+CorporateAdmin789
+```
+
+Press Enter. (Remember, the letters will not appear on the screen as you type them).
+
+Your prompt will instantly change to Core-Switch-01#, granting Jane Smith full administrative access to change configurations!
+
+---
+
+### Phase 6:
+---
+# Scenario 1:
+
+Global Bank just did renovation of her newly acquired building. During the renovation the IT department felt it was better to trunk and terminate all cables directly into an internet faceplate.
+
+A threat actor (Hacker) discovered a vulnerability:
+1. DHCP configuration of the IP system of the bank.
+---
+### 🛡️ Next Milestone: Let's Run the Port Security Attack!
+Now that my network has successfully scaled up to 6 workstations, has 4 distinct user accounts, and is completely stable, my infrastructure is perfectly prepared for the final security challenge.
+
+Let's simulate the physical cyber attack on your printer port (Port 6) to make sure your defensive configurations drop the intruder instantly.
+
+### 🚨 Step 1: Perform the Physical Cable Hijack
+1. Unplug the network cable directly out of your corporate Printer.
+2. Plug that exact same cable straight into your Hacker_Laptop.
+3. (The link light on the wire might look green or amber initially as Packet Tracer establishes a basic hardware connection).
+<img width="955" height="997" alt="image" src="https://github.com/user-attachments/assets/f874bbf1-1121-4c44-8871-a3606a062af4" />
+
+---
+### 💥 Step 2: Fire the Malicious PacketFor the switch to catch the intruder, the hacker laptop must transmit data down the wire so the switch can inspect its hardware fingerprint.
+1. Click on the Hacker_Laptop and navigate to the Desktop tab.
+2. Open the Command Prompt application.
+3. Type the attack command to generate traffic toward your private network server:
+```
+ping 192.168.1.10
+```
+4. Press Enter and instantly look back at your network topology map.
+<img width="742" height="457" alt="image" src="https://github.com/user-attachments/assets/926edf55-e04b-41fe-ab04-e525833877e0" />
+
+---
+
+Now, we are going to set the trap. We are going to turn port security back on right now while the hacker is still plugged into Port 6. We will tell the switch to dynamically memorize the very next device that talks. Right now, that's the hacker.
+
+But then, we will swap the cable back to the legitimate Printer and watch the printer trigger the shutdown! This is a great way to see the switch catch an anomaly because the switch will think the printer is the "intruder" since it learned the hacker first.
+
+---
+
+### 🛠️ Step 1: Arm the Trap on Port 6
+Click on your Switch, open the CLI tab, and enter these commands exactly to turn security back on:
+```
+configure terminal
+interface fastethernet 0/6
+switchport mode access
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+exit
+exit
+write memory
+```
+<img width="726" height="903" alt="image" src="https://github.com/user-attachments/assets/369656b9-15ec-4595-b81a-f39be35c6f03" />
+
+---
+
+### 💾 Step 2: Force the Switch to Memorize the Hacker
+Right now, the switch's security table is empty again. Let's make the switch lock onto the hacker laptop's hardware fingerprint first.
+1. Click on your Hacker_Laptop and open the Command Prompt.
+2. Run a ping to the server to force data down the wire:
+```
+ping 192.168.1.10
+```
+3. The ping will succeed, but look behind the scenes! If you check your Switch CLI by running show port-security address, you will see that the switch has officially memorized the Hacker_Laptop's MAC address as the "safe" owner of Port 6.
+<img width="730" height="267" alt="image" src="https://github.com/user-attachments/assets/7253650c-8afd-43b8-bfd8-ef259427cfe4" />
+
+---
+
+The switch has successfully memorised the MAC address 000C.CFCD.5032 on port Fa0/6. Because the hacker laptop was the active device that sent the last ping, that unique signature belongs to the hacker laptop! The switch now firmly believes that the hacker is the only trusted device allowed on that port.
+
+Now, we are going to spring the trap by plugging the Printer back into that wire. Since the printer has a completely different MAC address, the switch will flag it as an unauthorized intruder and lock down the line.
+
+---
+
+<img width="1123" height="1000" alt="image" src="https://github.com/user-attachments/assets/d6589e21-e21f-4935-a894-979a4f4f5fee" />
+
+### 🚨 Step 3: Perform the Reverse Attack (The Trap Springs!)
+Now, let's pull the rug out from under the system.
+1. Unplug the cable from the Hacker Laptop.
+2. Plug it straight back into your corporate Printer.
+3. Now, we need the printer to talk. Click on your Printer -> Go to the Config tab -> FastEthernet0 interface.
+4. Toggle the IP configuration from DHCP to Static, and then right back to DHCP to force it to transmit data packets.
+<img width="746" height="483" alt="image" src="https://github.com/user-attachments/assets/ecec657b-7898-4d99-ba0b-bc80b4291c33" />
+
+
+### 🔍 Watch the Link Light!
+<img width="1123" height="1016" alt="image" src="https://github.com/user-attachments/assets/b2bbb814-96d5-40b7-bbcf-19502f777b72" />
+
+The exact millisecond the printer attempts to broadcast its hardware footprint to renew its IP address, the switch will compare it to the hacker's address it memorized in Step 2. It will realize a hardware mismatch has occurred, slam the port shut, and the link light will instantly snap to solid RED!
+
+---
+
+### Scenario: The Unsecured Switch Port Vulnerability
+1. The Incident & TroubleshootingThe ICT Department received a critical helpdesk ticket reporting that a network printer was completely unresponsive and failing to print. An IT representative was dispatched to investigate.
+
+After several hours of extensive troubleshooting—including restarting the print spooler, checking drivers, and cycling the power—the technician decided to test the physical layer.  He unplugged the printer's network cable from the dead interface and plugged it into Switch Port 9 (from its original wall jack and plugged it into a different, adjacent network port on the wall).
+
+Immediately, the printer pulled a new connection and started printing successfully. The issue was resolved for the user, and the technician closed the ticket.
+
+### 2. The Security Blind Spot (The Hacker's Discovery)
+Unbeknownst to the IT representative, the successful troubleshooting step revealed a major security flaw. A hacker conducting internal reconnaissance on the network noticed the same thing: multiple unused network ports across the office were fully active and patched directly into the core switch.
+
+The hacker discovered that they could simply plug a rogue laptop into any vacant wall port or change their connection to another open switch port. So the hacker plugged a rogue laptop into Port 10 and instantly gained unrestricted access to the internal network.  Because these ports were left open and unmonitored, the hacker gained unrestricted access to the internal network, allowing them to bypass physical security boundaries and begin sniffing network traffic.
+
+### 3. The Solution: Hardening the Network Switch
+
+To remediate this vulnerability, the ICT department must implement a strict port-security policy. While Port 9 remains enabled for the printer, all other unused interfaces—including the exploited Port 10—must be administratively shut down.
+
+Here is the configuration to secure the switch (assuming a standard 24-port Cisco switch):
+```
+! Access the switch configuration mode
+Switch# configure terminal
+
+! Secure Port 9 specifically for the printer (Optional: bind it to the printer's MAC)
+Switch(config)# interface fastEthernet 0/9
+Switch(config-if)# description Network_Printer_Port
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport port-security
+Switch(config-if)# switchport port-security maximum 1
+Switch(config-if)# switchport port-security violation shutdown
+
+! Administratively shut down Port 10 and all other unused ports
+Switch(config)# interface range fa0/10 - 24
+Switch(config-if-range)# shutdown
+Switch(config-if-range)# description Unused_Port_Disabled_by_ICT
+
+! Exit and save the changes
+Switch(config-if-range)# end
+Switch# write memory
+```
+
+
+
+
+
+
