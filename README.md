@@ -315,3 +315,53 @@ telnet 192.168.1.1
    2. Password: P@ssword1
 3. You will land on the resting read-only view (Core-Switch-01>).
 4. Attempt to run configuration changes by typing:
+```
+configure terminal
+```
+<img width="733" height="598" alt="image" src="https://github.com/user-attachments/assets/b35d8b3f-9e6d-4d74-95c1-be7a4aa6d33e" />
+
+The switch will immediately reject the input and say Bad secrets or "% Invalid input detected" or block the transaction. This proves your role restrictions are fully working!
+
+---
+
+Let’s scale up my network infrastructure! I will be adding 3 new PC's and 3 new employee accounts. Testing how an environment handles growth is an excellent way to prove that my architecture can support a expanding corporate business.
+
+Because I engineered the system with automated DHCP and centralized AAA, adding more devices and users will be rapid and seamless.
+---
+
+### 🖥️ Step 1: Scale the Hardware Layout (Add 3 More PCs)
+Let's expand my corporate office floor from 3 workstations to 6.
+1. Go to your bottom-left device library, select End Devices, and drag 3 more PC-PTs onto your workspace (they will likely be named PC3, PC4, and PC5).
+2. Grab the solid black Copper Straight-Through cable.
+3. Manually map each new computer to an empty port on your switch:
+   1.   Connect PC 3 (FastEthernet0) ➡️ Switch (FastEthernet0/5)
+   2.   Connect PC 4 (FastEthernet0) ➡️ Switch (FastEthernet0/7)
+   3.   Connect PC 5 (FastEthernet0) ➡️ Switch (FastEthernet0/8)
+4. Click on each of the 3 new PCs (PC3, PC4, PC5), go to Desktop -> IP Configuration, and click DHCP.
+---
+
+### 🗂️ Step 2: Scale the Identity Registry (Add More Employee Roles)
+Let's expand your Active Directory database by adding an executive account and an engineering profile.
+1. Click on your Server and navigate to the Services tab -> AAA menu.
+2. Ensure the service toggle remains ON, scroll down to the User Setup ledger, and add these new operational identities:
+   * The Chief Technology Officer (Full Admin privileges):
+     * Username: jane.smith
+     * Password: SecureCto789!
+     * Click Add.
+   * Head of Marketing (Restricted operator status):
+     * Username: head.marketing 
+     * Password: Market551
+     * Click Add.
+<img width="762" height="400" alt="image" src="https://github.com/user-attachments/assets/c5c361d5-b4c5-4d0d-88da-48675d7c56a2" />
+
+---
+
+### 🧪 Step 3: Run a Verification Scan from the New Tier
+Let's ensure your scaled environment can securely touch the infrastructure management lines:
+1. Click on your newly added workstation PC 4.
+2. Go to the Desktop tab and launch the Command Prompt.
+3. Attempt to establish an administration terminal connection back to the switch:
+```
+telnet 192.168.1.1
+```
+4. Authenticate using your brand-new user identity: jane.smith with password SecureCto789!.
