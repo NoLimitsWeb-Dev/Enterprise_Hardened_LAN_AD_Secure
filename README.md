@@ -1,11 +1,14 @@
 ## automated-enterprise-network-simulation
+
 Scalable branch office architecture featuring central AAA/RADIUS, DHCP distribution pools, and DNS web infrastructure.
 ---
 
 ## Secure Enterprise LAN Infrastructure & Hardening Simulation
 
 ### 📌 Project Overview
+
 This repository contains the complete design, deployment blueprint, and security hardening lifecycle of an enterprise-grade branch office Local Area Network (LAN). Built entirely within Cisco Packet Tracer, this project demonstrates structural defense-in-depth methodologies by integrating a centralized Active Directory / AAA framework with robust Layer-2 network security mechanisms to actively mitigate both physical intrusion and sophisticated insider threat vectors.
+
 ---
 
 ### 🎯 Core Engineering Objectives
@@ -29,93 +32,256 @@ This repository contains the complete design, deployment blueprint, and security
 |  Diagnostic Sniffer Node  |  Fa0/11  |  Ingress Monitor  |  Dedicated network analysis tap mapped as the target line for automated traffic mirroring (SPAN).  |
 |  Malicious Actor Node  |  Fa0/6 / Fa0/10  |  Attack Target  |  Rogue adversarial laptop executing physical layer data harvesting and network perimeter sniffing.  |
 ---
-
-### 🚨 Executed Attack & Defense Scenarios
-Phase 1: Automated Network Provisioning & Domain Hosting
-* The Environment: Deployed a core server managing DHCP distribution (allocating IPs from .50 to .100 to safeguard fixed internal infrastructure) and DNS parameters mapping mycompany.local to the corporate web server. Employees access an internal intranet web portal housing a central Office Printing Management Monitor Dashboard.
----
-
 ### 🛠️ Step 1: Create the Physical Topology
 1. Open Cisco Packet Tracer.
-2. Drag and drop the following devices onto your workspace:
-   * 1 Server-PT  and name AD_Server (This will act as our simulated "Active Directory / AAA" Server)
-   * 1 Switch (e.g., Cisco Catalyst 2960)
-   * 1 PC-PT or Laptop-PT  (To test user authentication)
-3. Connect the Server and the PC to the Switch using standard Copper Straight-Through cables.
-<img width="946" height="1031" alt="image" src="https://github.com/user-attachments/assets/a3d10beb-d62e-41ba-8310-799fed0a8d0c" />
+2. 1 Server-PT (This will be our Active Directory, DNS, DHCP, and Web server).
+3. 1 Switch (Select the Cisco Catalyst 2960).
+4. 3 PC-PTs (I will start with 3 workstations to test our automation, then scale up).
+5. 1 Printer-PT (Our centralized office network asset).
+
+🔌 Step 2: Cable the Network (Crucial Port Mappings)
+
+Grab the solid black Copper Straight-Through cable tool. To avoid the port confusion, I am going to manually plug each wire into a specific, designated port on the switch.
 
 ---
 
-### 🌐 Step 2: Configure IP Addresses
+### ⏳ Step 3: Let the Ports Turn Green
+Once everything is plugged in, look at your network diagram. You will notice the lights near the switch are blinking orange/amber.
+* Look at the bottom-left toolbar of your main Packet Tracer screen.
+* Click the Fast Forward Time (>>) button twice.
+* Every single active cable light on your screen should now be solid green.Our physical wiring matrix is now complete and verified!
+<img width="999" height="1001" alt="image" src="https://github.com/user-attachments/assets/1ee665a2-192a-46a2-bf6b-0bc1218883b5" />
+
+---
+
+### 🌐 Step 4: Configure IP Addresses
 To make the network functional, we need to establish static IP routing.
 
 ---
 |  Device  |  IP Address  |  Subnet Mask  |  Default Gateway  |
 |  :---  |  :---  |  :---  |  :---  |
 |  Server  |  192.168.1.10  |  255.255.255.0  |  192.168.1.1  |
-|  PC  |  192.168.1.20  |  255.255.255.0  |  192.168.1.1  |
+|  PC0  |  192.168.1.20  |  255.255.255.0  |  192.168.1.1  |
 ---
 
-1. Click on the Server → Go to the Desktop tab → Open IP Configuration.
-2. Fill in the values using the table above. Ensure you also set the DNS Server on the server itself to 192.168.1.10.
-<img width="742" height="656" alt="image" src="https://github.com/user-attachments/assets/8bbecbe5-0dd8-4a63-9da9-81097e428d31" />
-
-3. Repeat the process for the PC, ensuring its DNS Server is also set to 192.168.1.10.
-<img width="734" height="750" alt="image" src="https://github.com/user-attachments/assets/be9d0edd-d3a2-4437-9449-12a6341edb74" />
-
----
-
-### 🖥️ Step 3: Configure the Simulated AD Services
-1. Setup Domain Name Resolution (DNS)
-
-Real Active Directory environments rely heavily on DNS.
-1. Click on the Server and navigate to the Services tab.
-2. Click DNS on the left menu.
-3. Turn the service ON.
-4. Create a record for your domain:
-   * Name: branch.com
-   * Type: A Record
-   * Address: 192.168.1.10
-<img width="750" height="400" alt="image" src="https://github.com/user-attachments/assets/4c2ab227-8e53-4926-abfe-19c99daa5cd7" />
-
-5. Click Add.
-<img width="738" height="434" alt="image" src="https://github.com/user-attachments/assets/f9214ff3-4e4d-466f-b7b4-397940e71150" />
-
-2. Create the User Database (AAA / RADIUS)
-
-Instead of an AD database, Packet Tracer uses AAA (Authentication, Authorization, and Accounting) to centrally manage user credentials.
-   1. While still in the Services tab of the Server, click on AAA.
-   2. Turn the service ON.
-   3. Configure the Network Client (the device requesting authentication, such as a switch or a router):
-      * Client Name: Switch1
-      * Client IP: 192.168.1.1
-      * Secret: cisco123 (this is the shared secret key)
-      * Server Type: Select RADIUS
- <img width="752" height="1010" alt="image" src="https://github.com/user-attachments/assets/16a386b6-8577-4022-a98e-2c5e0e8230d1" />
-
-  4. Click Add.
-<img width="751" height="531" alt="image" src="https://github.com/user-attachments/assets/048ef1ab-afc4-4a95-9dd4-85879a8874b7" />
-
-  5. Scroll down to the User Setup section to create simulated Active Directory users:
-     * Username: BM_PC
-     * Password: P@ssword1
-<img width="748" height="999" alt="image" src="https://github.com/user-attachments/assets/a2a158e2-f973-4a15-962e-bfa1bd513870" />
-
-  6. Click Add (repeat this step for as many employee accounts as you want to simulate).
-<img width="740" height="488" alt="image" src="https://github.com/user-attachments/assets/147724a6-bad5-49ea-81ea-48191e69b77a" />
-
-  7. Let's add five (5) more employee accounts now.
-<img width="740" height="987" alt="image" src="https://github.com/user-attachments/assets/db14ab3e-109c-4ba9-9bda-e9ae5e301321" />
+### 🖥️ Step 5: Configure the Server IP
+1. Click on your Server -> Go to the Desktop tab -> Open IP Configuration.
+2. Fill in these static numbers exactly:
+   1. IP Address: 192.168.1.10
+   2. Subnet Mask: 255.255.255.0
+   3. Default Gateway: 192.168.1.1
+   4. DNS Server: 192.168.1.10 (It points to itself since it will host DNS).
+3. Close the IP configuration box.
+<img width="750" height="985" alt="image" src="https://github.com/user-attachments/assets/9aabc800-24b0-4581-a4b8-4469b827d076" />
 
 ---
-### 🧪 Step 4: Testing Your Setup
-While you can't join the PC to a Windows Domain via the typical Windows GUI interface in Packet Tracer, you can test if the network-wide credential validation works:
-1. Click on the PC.
-2. Go to the Desktop tab and open the Command Prompt.
-3. Run a test ping to verify basic connectivity: 
+
+### ⌨️ Step 5: Set Up the Switch Hostname and Management IP
+Now let's program the switch so it has an identity and a network address that our workstations can reach.
+1. Click on your Switch and navigate to the CLI tab.
+2. Press Enter once to bring up the Switch> prompt.
+3. Let's Copy and paste (or type) this exact clean script block:
 ```
-ping 192.168.1.10
+enable
+configure terminal
+hostname Core-Switch-01
+interface vlan 1
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+exit
+ip default-gateway 192.168.1.1
+write memory
 ```
-<img width="749" height="408" alt="image" src="https://github.com/user-attachments/assets/ddeae4fb-0142-4102-bc2b-bd27928d3ad2" />
+<img width="758" height="465" alt="image" src="https://github.com/user-attachments/assets/e22c097b-6247-46b4-be72-12cc2d6180db" />
 
 ---
+### 🧪 Step 3: Run the First Connectivity Test
+Let's make sure the switch and server can speak across the wire.
+1. Click on the Server -> Go to the Desktop tab -> Open the Command Prompt.T
+2. ype this ping command to test the path to the switch:cmd
+```
+ping 192.168.1.1
+```
+<img width="747" height="703" alt="image" src="https://github.com/user-attachments/assets/24a7306c-ab92-4232-8108-9da3b4986725" />
+
+*Having four successful replies back, show my infrastructure coordinates are perfect.*
+
+---
+## Phase 3:
+---
+
+### 🌐 Step 1: Turn on DHCP (IP Address Distribution)
+1. Click on your Server and navigate to the Services tab at the top.
+2. Select DHCP from the left-hand column.
+3. Toggle the Service to ON.
+4. Configure the default pool variables exactly like this:
+   1. Default Gateway: 192.168.1.1
+   2. DNS Server: 192.168.1.10
+   3. Start IP Address: Change the last digit box to 50 (It will read: 192.168.1.50). This keeps numbers 11 through 49 safe for any future network nodes.
+   4. Subnet Mask: 255.255.255.0
+   5. Maximum number of Users: 50
+<img width="754" height="597" alt="image" src="https://github.com/user-attachments/assets/89cbbf58-ff7e-458b-8202-1ffe6be6774b" />
+
+5. Click the Save button directly below those entry fields.
+<img width="740" height="573" alt="image" src="https://github.com/user-attachments/assets/c7e91944-1540-4841-8c33-f9d8e210cbbe" />
+
+---
+
+### 🔍 Step 2: Turn on Domain Name Services (DNS)
+1. While still inside the Server's Services tab, select DNS from the left-hand column.
+2. Toggle the Service to ON.
+3. Create your domain mapping identity:
+   1. Name: mycompany.local
+   2. Type: A Record
+   3. Address: 192.168.1.10
+<img width="745" height="430" alt="image" src="https://github.com/user-attachments/assets/d4254351-6883-432a-aa9c-8068f5ec06b8" />
+
+4. Click the Add button.
+<img width="751" height="461" alt="image" src="https://github.com/user-attachments/assets/31f980cd-321b-42e0-9fc8-34b67157e905" />
+
+---
+
+### 🧪 Step 3: Activate the Workflow on Your Workstations
+Let's test if the automated services work perfectly on your three client computers:
+1. Click on PC 0 -> Go to the Desktop tab -> Open IP Configuration.
+2. Change the selection setting from Static to DHCP.
+3. Wait 2 seconds. You will see "DHCP request successful!" appear, and its IP will automatically populate with 192.168.1.50.
+<img width="740" height="1015" alt="image" src="https://github.com/user-attachments/assets/d868ab14-faef-44bf-ad03-e7040c0ac630" />
+
+4. Let's repeat this exact step for PC 1 and PC 2. (They will automatically receive the coordinates 192.168.1.51 and 192.168.1.52).
+
+---
+### Phase 3:
+---
+
+### 🗂️ Step 1: Configure the Switch Entry on the Server
+1. Click on your Server and go to the Services tab.
+2. Select AAA from the left-hand column menu.
+3. Toggle the Service to ON.
+4. First, let's identify your switch to the server so they can securely communicate:
+   1. Client Name: Core-Switch-01
+   2. Client IP: 192.168.1.1 (The exact management IP we gave the switch)
+   3. Secret: cisco123 (Our shared secret communication key)
+   4. Server Type: Ensure RADIUS is selected.
+<img width="747" height="907" alt="image" src="https://github.com/user-attachments/assets/ff1ebb83-46dd-4d55-ade4-e3b2f112b875" />
+
+5. Click the Add button directly under those network fields.
+<img width="751" height="520" alt="image" src="https://github.com/user-attachments/assets/85a28db0-6645-4470-b464-c4a95658954f" />
+
+---
+### 👤 Step 2: Create Your Corporate User Accounts
+Now let's scroll down slightly on that same screen to the User Setup section. We will add our two test employee personas:
+1. **The Administrator Account:**
+   1. **Username:** alex.brown
+   2. **Password:** P@ssword1
+   3. Click **Add**.
+2. **The Restricted Support Account:**
+   1. Username: customer.care
+   2. Password: P@ssword1
+   3. Click Add.
+<img width="752" height="904" alt="image" src="https://github.com/user-attachments/assets/6c8f23f3-1d0b-47d6-810c-a0ec7d241229" />
+
+---
+
+### 🧪 Step 3: Configure the Network Printer for DHCP
+Since our user database is ready, let's also make sure your office Printer is online before we lock down the switch security profiles.
+1. Click on your Printer asset (on Port 6).
+2. Go to the Config tab -> Click on FastEthernet0 on the left menu.
+3. Change the IP Configuration setting from Static to DHCP.
+4. Wait 2 seconds. It should automatically grab the next coordinate pool address.
+<img width="737" height="902" alt="image" src="https://github.com/user-attachments/assets/7f89eed9-c051-4570-b8b7-66be72713164" />
+
+---
+### Phase 4
+---
+
+### 🖥️ Step 1: Add the Main Website Home Page
+1. Click on your Server and navigate to the Services tab at the top.
+2. Select HTTP from the left-hand column menu.
+3. Ensure both HTTP and HTTPS toggles are set to ON.
+4. Scroll down the file manager list, find index.html, and click the edit link on the right side.
+5. Wipe out everything inside the file and paste this clean, simple HTML layout:
+```
+<html>
+  <head><title>MyCompany Intranet</title></head>
+  <body>
+    <h1>Welcome to the MyCompany Corporate Intranet Portal!</h1>
+    <h3>Authorized Employee Access Only</h3>
+    <hr>
+    <p><a href="printer.html">Go to Central Office Printing Dashboard</a></p>
+  </body>
+</html>
+```
+6. Click the Save button at the bottom and click Yes to overwrite the file.
+<img width="736" height="907" alt="image" src="https://github.com/user-attachments/assets/0d2d5274-9f45-4f3e-b160-8f1247a11dda" />
+
+---
+
+### 🖨️ Step 2: Create the Printing Status Dashboard Page
+Now let's build the dedicated webpage that displays your active printing network statistics.
+1. While still inside the Server's HTTP file manager, click the New File link (usually located at the very top or bottom of the file repository list).
+2. For the file name, type exactly: printer.html
+3. Inside the blank file workspace, copy and paste this custom status dashboard layout:
+```
+<html>
+  <head><title>Print Server Dashboard</title></head>
+  <body>
+    <h2>MyCompany Central Print Server</h2>
+    <hr>
+    <p><b>Printer Status:</b> Online & Operational</p>
+    <p><b>Network Address:</b> 192.168.1.53</p>
+    <p><b>Paper Level:</b> 95% (Letter Capacity)</p>
+    <p><b>Toner Level:</b> 98% (Black & White Standard)</p>
+    <p><b>Active Jobs in Queue:</b> 0 Jobs Pending</p>
+    <br>
+    <hr>
+    <a href="index.html">Back to Main Corporate Portal</a>
+  </body>
+</html>
+```
+<img width="745" height="910" alt="image" src="https://github.com/user-attachments/assets/2cd2d18a-7a80-4e85-b6d5-24a25f07b2de" />
+
+4. Click the Save button and select Yes to secure the document.
+---
+
+### 🧪 Step 3: Browse the Dashboard from Your PCs
+Let's make sure the website and links load up flawlessly across your workstations.
+1. Click on PC 0 (or any of your 3 PCs) -> Go to the Desktop tab -> Open the Web Browser application.
+2. In the URL bar at the top, type your friendly address and hit Enter:
+```
+globalbank.com
+```
+<img width="734" height="484" alt="image" src="https://github.com/user-attachments/assets/fcf0fec4-09e1-43a2-a9eb-09908466bfa4" />
+
+3. Your main company welcome page will load up. Click on the link that says "Go to Central Office Printing Dashboard".
+4. The page will immediately update to display your paper levels, toner updates, and printer coordinate points!
+<img width="750" height="648" alt="image" src="https://github.com/user-attachments/assets/4c07104f-03ea-4aeb-83ff-984f35702c58" />
+
+---
+### Phase 5:
+---
+
+### 🛠️ Step 1: Arm the Switch with AAA Protection
+1. Click on Core-Switch-01 and navigate to the CLI tab.
+2. Press Enter to see the command prompt.
+3. Copy and paste this complete block of security rules directly into the terminal window:
+```
+configure terminal
+service password-encryption
+username admin privilege 15 secret LocalAdminPass123
+enable secret CorporateAdmin789
+aaa new-model
+radius server AD_SERVER
+address ipv4 192.168.1.10
+key cisco123
+exit
+aaa authentication login default group radius local
+aaa authorization exec default group radius local
+line vty 0 4
+privilege level 1
+transport input all
+exit
+exit
+write memory
+```
+<img width="741" height="917" alt="image" src="https://github.com/user-attachments/assets/1a536bac-c50f-44c4-9403-1c8e1bebcab0" />
