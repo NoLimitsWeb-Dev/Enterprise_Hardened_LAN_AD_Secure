@@ -513,8 +513,41 @@ Switch(config-if-range)# end
 Switch# write memory
 ```
 
+### 🔍 Check the Impact on Your Topology
+The exact millisecond you execute those commands:
+1. Look directly at your Hacker_Laptop connected to Port 10. Its connection light will instantly change from green to solid RED.
+2. The hacker's terminal session is permanently disconnected. If they physically move their wire to Port 11, 12, or 24, those wall jacks are completely dead because the software has disabled them.
+3. Look at your Printer on Port 9 and your 6 PCs on Ports 1-8. They remain completely untouched, green, healthy, and operational!
 
+This completes the baseline defensive design for an enterprise network: Only authorized corporate endpoints have open ports, and the rest of the building is completely locked down.
 
+<img width="1143" height="1023" alt="image" src="https://github.com/user-attachments/assets/e4cc4cb1-f0c4-495d-9ddb-dbefdc535836" />
 
+Best Practices Implemented
+* **Network Hardening:** Unused ports no longer provide an open invitation to attackers.
+* **Change Control:** If a user needs a new port activated in the future, it must go through an official ICT request, ensuring full visibility of all connected devices.
 
+---
+
+### Scenario: The Malicious Insider & Network Sniffer
+A senior systems administrator, passed over for a major promotion, decides to monetize corporate intellectual property by capturing unencrypted traffic directly from the local area network (LAN). Using his elevated administrative privileges, they install a software-based packet sniffer (such as Wireshark or tcpdump) on a core staging server. Because the company's internal database replication traffic is natively unencrypted, the admin successfully captures proprietary source code, customer records, and corporate strategy files passing over the wire. They then quietly exfiltrate these PCAP (packet capture) files to a personal cloud storage account and sell them directly to the company's primary market competitor.
+
+This is a classic Insider Threat and Data Exfiltration blueprint. It perfectly illustrates why organizations cannot rely on perimeter defenses alone—if a user already holds legitimate administrative access, they can manipulate internal routing and monitoring systems from the inside.
+
+Let's build this scenario directly into my Packet Tracer lab using a dedicated database staging server to model how this data harvest occurs and how to mathematically neutralize it.
+---
+
+### 🗄️ Step 1: Deploy the Database Staging Infrastructure
+To isolate this test from your main Active Directory server, we will drag in a separate server to represent the target asset.
+1. Go to your bottom-left device menu, select End Devices, and drag a fresh Server onto the workspace. Name it Database_Staging.
+2. Connect a black Copper Straight-Through cable from Database_Staging (FastEthernet0) to Switch Port FastEthernet0/13.
+3. Go to your Switch CLI and type these quick commands to wake that port up (since it was blocked in our previous mass-lockdown step):
+```
+configure terminal
+interface fastethernet 0/13
+no shutdown
+exit
+```
+4. Click Fast Forward Time (>>) to turn the link green.
+5. Click on the Database_Staging server -> Go to Desktop -> IP Configuration -> Select DHCP. It will pull a dynamic IP address automatically (e.g., 192.168.1.57).
 
