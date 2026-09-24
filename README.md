@@ -285,3 +285,33 @@ exit
 write memory
 ```
 <img width="741" height="917" alt="image" src="https://github.com/user-attachments/assets/1a536bac-c50f-44c4-9403-1c8e1bebcab0" />
+
+---
+
+### 🧪 Test 1: Validate the Admin Account (alex.brown)
+1. In the PC Command Prompt, initiate the management link:
+```
+telnet 192.168.1.1
+```
+2. Enter the credentials exactly as saved:
+   1. Username: alex.brown
+   2. Password: P@ssword1
+3. Notice it land on the restricted Core-Switch-01> screen. To unlock full administrative power, type:
+```
+enable
+```
+4. Enter the master supervisor key: CorporateAdmin789. Your prompt will instantly shift to Core-Switch-01#, granting full administrative configuration powers!
+5. Type exit and hit Enter to log out and clear the line for the next test.
+<img width="705" height="378" alt="image" src="https://github.com/user-attachments/assets/2d784c95-03a1-4909-a720-cbb89face9af" />
+
+---
+### 🧪 Test 2: Validate the Support Account (customer.care)
+1. Initiate the management link once more from the PC Command Prompt:
+```
+telnet 192.168.1.1
+```
+2. Enter the support operator credentials:
+   1. Username: customer.care
+   2. Password: P@ssword1
+3. You will land on the resting read-only view (Core-Switch-01>).
+4. Attempt to run configuration changes by typing:
