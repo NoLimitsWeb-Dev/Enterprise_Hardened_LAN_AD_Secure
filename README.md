@@ -551,3 +551,4 @@ exit
 4. Click Fast Forward Time (>>) to turn the link green.
 5. Click on the Database_Staging server -> Go to Desktop -> IP Configuration -> Select DHCP. It will pull a dynamic IP address automatically (e.g., 192.168.1.57).
 
+---
