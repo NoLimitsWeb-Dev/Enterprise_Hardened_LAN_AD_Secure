@@ -699,7 +699,10 @@ Let's verify how the encryption defenses look to a hacker or another rogue sniff
 <img width="759" height="908" alt="image" src="https://github.com/user-attachments/assets/a502156f-fb54-4319-939d-8f2510dd76a5" />
 
 * Instead, the sniffer will log rows labeled HTTPS and SSH.
+<img width="809" height="956" alt="image" src="https://github.com/user-attachments/assets/8415239a-33a8-4a62-95d0-10677f2b8536" />
+
 * Click on any of those new packets and scroll to the bottom text window. Instead of readable English text, usernames, or paths, the data payload field is completely filled with a scrambled, chaotic block of mathematical gibberish.
 
 Your data is now 100% secure from internal and external eavesdroppers!
 With the threat contained, the engineering team immediately transitions to emergency remediation—transitioning legacy legacy configurations to encrypted standards (HTTPS and SSH) to ensure that any future sniffing attempts yield nothing but unreadable data.
+---
