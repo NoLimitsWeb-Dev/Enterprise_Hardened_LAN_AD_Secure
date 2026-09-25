@@ -23,14 +23,14 @@ This repository contains the complete design, deployment blueprint, and security
 
 ---
 
-|  Node Identity  |  Port Binding  |  IP Coordinates  |  Role & Operational Layer Profile  |
+|  **Node Identity**  |  **Port Binding**  |  **IP Coordinates**  |  **Role & Operational Layer Profile**  |
 |  :---  |  :---  |  :---  |  :---  |
-|  Active Directory Services  |  Fa0/2  |  192.168.1.10 (Static)  |AAA/RADIUS Datastore, DHCP Scope Pool, Domain Name Server (DNS), and Corporate Intranet Web Host.  |
-|  Core Switching Element  |  VLAN 1  |  192.168.1.1 (Static)  |  Core-Switch-01 (Cisco Catalyst 2960). Enforces localized Layer-2 boundaries, port protection profiles, and VTY ingress paths.  |
-|  Corporate Workstations  |  Fa0/1 – Fa0/5, Fa0/7  |  Dynamic Leasing  |  Six employee endpoint assets automatically configured with standard gateway, subnet, and nameserver parameters.  |
-|  Shared Network Printer  |  Fa0/9  |  Dynamic Leasing  |  Swapped tracking interface managed remotely via an interactive central printer status web dashboard (printer.html).  |
-|  Diagnostic Sniffer Node  |  Fa0/11  |  Ingress Monitor  |  Dedicated network analysis tap mapped as the target line for automated traffic mirroring (SPAN).  |
-|  Malicious Actor Node  |  Fa0/6 / Fa0/10  |  Attack Target  |  Rogue adversarial laptop executing physical layer data harvesting and network perimeter sniffing.  |
+|  **Active Directory Services**  |  Fa0/2  |  192.168.1.10 (Static)  |AAA/RADIUS Datastore, DHCP Scope Pool, Domain Name Server (DNS), and Corporate Intranet Web Host.  |
+|  **Core Switching Element**  |  VLAN 1  |  192.168.1.1 (Static)  |  Core-Switch-01 (Cisco Catalyst 2960). Enforces localized Layer-2 boundaries, port protection profiles, and VTY ingress paths.  |
+|  **Corporate Workstations**  |  Fa0/1 – Fa0/5, Fa0/7  |  Dynamic Leasing  |  Six employee endpoint assets automatically configured with standard gateway, subnet, and nameserver parameters.  |
+|  **Shared Network Printer**  |  Fa0/9  |  Dynamic Leasing  |  Swapped tracking interface managed remotely via an interactive central printer status web dashboard (printer.html).  |
+|  **Diagnostic Sniffer Node**  |  Fa0/11  |  Ingress Monitor  |  Dedicated network analysis tap mapped as the target line for automated traffic mirroring (SPAN).  |
+|  **Malicious Actor Node**  |  Fa0/6 / Fa0/10  |  Attack Target  |  Rogue adversarial laptop executing physical layer data harvesting and network perimeter sniffing.  |
 ---
 ### 🛠️ Step 1: Create the Physical Topology
 1. Open Cisco Packet Tracer.
@@ -538,9 +538,11 @@ Let's build this scenario directly into my Packet Tracer lab using a dedicated d
 ---
 
 ### 🗄️ Step 1: Deploy the Database Staging Infrastructure
-To isolate this test from your main Active Directory server, we will drag in a separate server to represent the target asset.
-1. Go to your bottom-left device menu, select End Devices, and drag a fresh Server onto the workspace. Name it Database_Staging.
+To isolate this test from the main Active Directory server, I will drag in a separate server to represent the target asset.
+1. Let's go to the bottom-left device menu, select End Devices, and drag a fresh Server onto the workspace. Name it Database_Staging.
 2. Connect a black Copper Straight-Through cable from Database_Staging (FastEthernet0) to Switch Port FastEthernet0/13.
+<img width="954" height="1007" alt="image" src="https://github.com/user-attachments/assets/2b769776-4803-45d5-842c-931159f853c1" />
+
 3. Go to your Switch CLI and type these quick commands to wake that port up (since it was blocked in our previous mass-lockdown step):
 ```
 configure terminal
@@ -548,7 +550,156 @@ interface fastethernet 0/13
 no shutdown
 exit
 ```
+<img width="745" height="240" alt="image" src="https://github.com/user-attachments/assets/ed26f799-db92-461b-b6b4-fde057e95496" />
+
 4. Click Fast Forward Time (>>) to turn the link green.
-5. Click on the Database_Staging server -> Go to Desktop -> IP Configuration -> Select DHCP. It will pull a dynamic IP address automatically (e.g., 192.168.1.57).
+<img width="906" height="1009" alt="image" src="https://github.com/user-attachments/assets/213dbb80-611d-43c0-9516-236f264bf343" />
+
+5. Click on the Database_Staging server -> Go to Desktop -> IP Configuration -> Select DHCP. It will pull a dynamic IP address automatically (192.168.1.57).
+<img width="746" height="912" alt="image" src="https://github.com/user-attachments/assets/ba8acec8-5418-44ef-8c10-303659284d18" />
 
 ---
+
+### 📥 Step 2: Simulate the Insider Sniffing Tap
+In a real network, the rogue admin would install Wireshark directly on the staging server to capture traffic entering and leaving its network interface card. In Packet Tracer, we will use the native Sniffer appliance to model this data harvesting action.
+1. Drag a Sniffer appliance onto your workspace. Name it Internal_Harvest_Node.
+2. To mirror the database server's traffic over to the sniffer, go to your Switch CLI and run a new SPAN monitoring configuration:
+```
+configure terminal
+interface fastethernet 0/11
+no shutdown
+exit
+
+! Mirror all database replication data (Port 13) over to the sniffer interface (Port 11)
+monitor session 2 source interface fastethernet 0/13
+monitor session 2 destination interface fastethernet 0/11
+```
+---
+### 🚨 Step 3: Run the Interception & Exfiltration Test
+Let's simulate unencrypted database transactions moving across the network:
+1. Click on PC 0, open its Web Browser, and browse directly to your database server's IP address (e.g., 192.168.1.57).
+2. Because the traffic uses raw HTTP instead of HTTPS, the data moves over the local wire completely exposed.
+3. Click on the Internal_Harvest_Node (Sniffer) -> Go to the GUI tab -> Filter for HTTP.
+<img width="739" height="895" alt="image" src="https://github.com/user-attachments/assets/dfb9e5a6-9f9a-4a75-a88a-29883f8c694f" />
+
+4. Click on any captured HTTP packet row and inspect the payload at the bottom. The disgruntled employee can read proprietary configurations, code layouts, or raw system names plain as day inside the ASCII panel on the right side. They can now save this PCAP file and sell it to the competitor.
+<img width="1902" height="1020" alt="image" src="https://github.com/user-attachments/assets/c653f231-39ae-4fdd-8900-060be1e64f50" />
+
+```
+HTTP Data:
+Acceptimage/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Accept-Language: en-us
+Accept: */*Connection:
+closeHost: 192.168.1.57
+
+Referer
+http://192.168.1.57/
+
+User-Agent
+Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/6.8.7 Chrome/130.0.0.0 Safari/537.36
+```
+Let's look closely at the information the sniffer just intercepted:
+* The Destination Target (Host:): It clearly reads 192.168.1.57. This explicitly proves the user at the PC typed in or targeted your secret Database_Staging server coordinate!
+* The Entry Route (Referer:): It shows http://192.168.1.57/, confirming they hit the root webpage directly.
+* The Device Signature (User-Agent:): It shows the exact web browser details (Chrome/130.0.0.0 Safari/537.36) used to pull the corporate files.
+---
+
+### 🔍 Tracking the Insider's Footsteps
+This specific packet is the digital footprint of the attack. Even though Cisco Packet Tracer's light engine compresses the final text layout inside individual windows, this capture log contains exactly what a security investigator looks for.
+
+By analyzing this specific text file, an incident response team can trace exactly:
+* **Who sent it:** The machine with the browser signature.
+* **What they wanted:** Direct, unencrypted access to your staging asset.
+* **How they got it:** Over an open, unencrypted network path.
+
+I have now successfully captured, read, and verified the insider threat's traffic payload! This completely confirms the data harvesting phase of my custom cyber scenario.
+---
+
+### Scenario: The Apprehension and System Hardening
+This incident response scenario perfectly demonstrates the full lifecycle of security operations: **Detection, Containment, Eradication, and Hardening.**
+
+### 🚨 The Incident Response Scenario: The Insider is Caught
+
+**1. Detection**
+The Security Operations Center (SOC) team notices an anomaly on the network monitoring dashboard. A massive volume of data packets is streaming continuously out of Switch Port Fa0/11 (the Sniffer port).
+**2. Forensic Analysis**
+An incident response engineer logs into the core switch and runs the audit commands you learned earlier:
+* Core-Switch-01# show users
+* Core-Switch-01# show tcp brief
+
+The switch output reveals that an active administrative session is running from PC 0, using the hijacked credentials of a junior support employee. The team checks the physical security logs and security cameras for that cubicle and identifies the disgruntled senior systems administrator sitting at the keyboard.
+
+**3. Apprehension & Containment**
+Before the admin can upload the copied data files to the external competitor, the security team initiates immediate containment protocols:
+* The network engineer logs into the switch and instantly shuts down the compromised port:
+```
+Core-Switch-01(config)# interface fastethernet 0/1
+Core-Switch-01(config-if)# shutdown
+```
+<img width="909" height="1003" alt="image" src="https://github.com/user-attachments/assets/c99564e4-8f4a-4735-bae5-89990a68525d" />
+
+* Corporate security personnel arrive at the desk, terminate the employee's physical access, seize the malicious harvest node, and escort them out of the facility.
+```
+**NOTE:**
+We targeted interface fastethernet 0/1 because that is the exact physical port where PC 0 is plugged into the switch!
+
+Remember our original network wiring checklist from when we started this fresh build:
+* PC 0 ➡️ Connected to Switch Port FastEthernet 0/1
+
+In the incident response scenario, the forensic analysis team discovered that the disgruntled senior administrator had physically walked over to PC 0 and hijacked it to launch their sniffing attack.
+
+By typing interface fastethernet 0/1 followed by shutdown, the security engineer sends an immediate software kill-signal to that exact port. This instantly cuts off the electricity to the wire on Port 1, drops PC 0 offline, and freezes the malicious admin's active session in its tracks before they can hit "upload" or save another file.
+
+It is the fastest way to achieve network containment during an active cyber breach!
+```
+### 🛡️ The Hardening Phase: Activating Global Encryption
+Now that the threat is removed, let's fix the structural vulnerability by encrypting all traffic loops.
+
+### Step 1: Force HTTPS (Secure Web Browsing) on the Servers
+By activating HTTPS, all website content and text entries are scrambled via SSL/TLS encryption before leaving the server.
+1. Click on your Server (and then repeat this for Database_Staging).
+2. Go to the Services tab and click on HTTP in the left menu.
+3. Toggle the standard HTTP switch to OFF.
+<img width="758" height="567" alt="image" src="https://github.com/user-attachments/assets/c6acc8e2-2589-4c3c-8195-502f4610d486" />
+
+4. Ensure the HTTPS switch is set to ON.Now, any device attempting to read corporate data must use the secure path (https://globalbank.com).
+<img width="753" height="413" alt="image" src="https://github.com/user-attachments/assets/c02ea4ae-a27b-4552-baf5-178e733293a3" />
+
+### Step 2: Lock Down the Switch Terminal via SSH v2
+Let's permanently enforce encrypted remote management to neutralize line sniffing.
+
+Click on your Switch, open the CLI tab, unlock it using LocalAdminPass123 / CorporateAdmin789, and paste this clean encryption sequence:
+```
+configure terminal
+ip domain-name globalbank.com
+crypto key generate rsa   ! [Type 1024 if prompted and hit Enter]
+ip ssh version 2
+line vty 0 4
+transport input ssh
+exit
+exit
+write memory
+```
+<img width="748" height="869" alt="image" src="https://github.com/user-attachments/assets/650b31ef-e914-4ab6-9a97-4aa345996a13" />
+
+---
+
+### 🧪 The Final Security Verification (The Scramble Test)
+Let's verify how the encryption defenses look to a hacker or another rogue sniffer:
+1. Go to PC 1 (or any active PC), open the Web Browser, and attempt to access the unencrypted site: http://globalbank.com. **The connection will fail instantly**.
+<img width="756" height="325" alt="image" src="https://github.com/user-attachments/assets/0a4a0100-4446-4dea-8b74-2f275578d5ae" />
+
+2. Now, enter the secure URL: https://globalbank.com. The portal dashboard loads up perfectly.
+<img width="759" height="499" alt="image" src="https://github.com/user-attachments/assets/9b0781c1-1795-4f48-af0d-37bbcc79dbc3" />
+
+3. Open your Internal_Harvest_Node (Sniffer) tool and view the fresh log files.
+
+### 🔍 The Result:
+* There will no longer see any plain "HTTP" or "TELNET" protocol rows.
+<img width="759" height="908" alt="image" src="https://github.com/user-attachments/assets/a502156f-fb54-4319-939d-8f2510dd76a5" />
+
+* Instead, the sniffer will log rows labeled HTTPS and SSH.
+* Click on any of those new packets and scroll to the bottom text window. Instead of readable English text, usernames, or paths, the data payload field is completely filled with a scrambled, chaotic block of mathematical gibberish.
+
+Your data is now 100% secure from internal and external eavesdroppers!
+With the threat contained, the engineering team immediately transitions to emergency remediation—transitioning legacy legacy configurations to encrypted standards (HTTPS and SSH) to ensure that any future sniffing attempts yield nothing but unreadable data.
