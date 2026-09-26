@@ -1,6 +1,7 @@
 ## automated-enterprise-network-simulation
 
-Scalable branch office architecture featuring central AAA/RADIUS, DHCP distribution pools, and DNS web infrastructure.
+Scalable branch office architecture featuring central AAA/RADIUS, DHCP distribution pools, DNS web infrastructure, RADIUS Identity Governance, and Layer-2 Mitigation of Insider Threat Vectors.
+
 ---
 
 ## Secure Enterprise LAN Infrastructure & Hardening Simulation
@@ -19,18 +20,22 @@ This repository contains the complete design, deployment blueprint, and security
 * **Demonstrate Defensive Validation:** Replicate a Man-in-the-Middle (MitM) credential harvesting loop via traffic mirroring to prove the critical necessity of cryptographic protocols (SSH v2).
 
 ### 🗺️ Architectural Network Topology Blueprint
-<img width="1913" height="1020" alt="image" src="https://github.com/user-attachments/assets/3f32fbb9-b6d4-4e3c-aeed-c60fe7e4109f" />
+<img width="1016" height="1004" alt="image" src="https://github.com/user-attachments/assets/c49740e7-54d5-4e68-a110-0d206be341a6" />
 
 ---
 
-|  **Node Identity**  |  **Port Binding**  |  **IP Coordinates**  |  **Role & Operational Layer Profile**  |
+|  **System Node Identity**  |  **Physical Port**  |  **Configured Network Coordinates**  |  **Operational Profile & Managed Services**  |
 |  :---  |  :---  |  :---  |  :---  |
-|  **Active Directory Services**  |  Fa0/2  |  192.168.1.10 (Static)  |AAA/RADIUS Datastore, DHCP Scope Pool, Domain Name Server (DNS), and Corporate Intranet Web Host.  |
-|  **Core Switching Element**  |  VLAN 1  |  192.168.1.1 (Static)  |  Core-Switch-01 (Cisco Catalyst 2960). Enforces localized Layer-2 boundaries, port protection profiles, and VTY ingress paths.  |
-|  **Corporate Workstations**  |  Fa0/1 – Fa0/5, Fa0/7  |  Dynamic Leasing  |  Six employee endpoint assets automatically configured with standard gateway, subnet, and nameserver parameters.  |
-|  **Shared Network Printer**  |  Fa0/9  |  Dynamic Leasing  |  Swapped tracking interface managed remotely via an interactive central printer status web dashboard (printer.html).  |
-|  **Diagnostic Sniffer Node**  |  Fa0/11  |  Ingress Monitor  |  Dedicated network analysis tap mapped as the target line for automated traffic mirroring (SPAN).  |
-|  **Malicious Actor Node**  |  Fa0/6 / Fa0/10  |  Attack Target  |  Rogue adversarial laptop executing physical layer data harvesting and network perimeter sniffing.  |
+|  **Primary Domain Server(Active Directory Services)**  |  Fa0/2  |  192.168.1.10 (Static)  |AAA/RADIUS Datastore, DHCP Scope Pool, Domain Name Server (DNS), and Corporate Intranet Web Host.  |
+|  **Core Switching Element**  |  VLAN 1  |  192.168.1.1 (Static)  |  Core-Switch-01 (Cisco Catalyst 2960). Manages network authentication, access tokens, Enforces localized Layer-2 boundaries, port protection profiles, and VTY ingress paths.  |
+|  **Corporate Workstations**  |  Fa0/1, Fa0/3 - Fa0/5, Fa0/7, Fa0/8  |  Dynamic Leasing  |  Six employee endpoint assets automatically configured with standard gateway, subnet, and nameserver parameters.  |
+|  **Shared Network Printer**  |  Fa0/9 (Migrated)   |  Dynamic Leasing  |  Swapped tracking interface managed remotely via an interactive central printer status web dashboard (printer.html).  |
+|  **Internal Harvest Sniffer**  |  Fa0/11  |  Ingress Monitor  |  Packet sniffer appliance configured as the hardware destination line for mirrored network ports.  |
+|  **Malicious Actor Node**  |  Fa0/6 / Fa0/10  |  Attack Target/ Disconnected  |  Rogue adversarial laptop executing physical layer data harvesting and network perimeter sniffing.  |
+|  **Database Staging Node**   |   Fa0/13   |   192.168.1.57 (Dynamic)   |  Staging repository housing corporate intellectual property and records.   |
+
+---
+## Phase 1:
 ---
 ### 🛠️ Step 1: Create the Physical Topology
 1. Open Cisco Packet Tracer.
@@ -39,11 +44,9 @@ This repository contains the complete design, deployment blueprint, and security
 4. 3 PC-PTs (I will start with 3 workstations to test our automation, then scale up).
 5. 1 Printer-PT (Our centralized office network asset).
 
-🔌 Step 2: Cable the Network (Crucial Port Mappings)
+### 🔌Step 2: Cable the Network (Crucial Port Mappings)
 
 Grab the solid black Copper Straight-Through cable tool. To avoid the port confusion, I am going to manually plug each wire into a specific, designated port on the switch.
-
----
 
 ### ⏳ Step 3: Let the Ports Turn Green
 Once everything is plugged in, look at your network diagram. You will notice the lights near the switch are blinking orange/amber.
@@ -51,20 +54,9 @@ Once everything is plugged in, look at your network diagram. You will notice the
 * Click the Fast Forward Time (>>) button twice.
 * Every single active cable light on your screen should now be solid green.Our physical wiring matrix is now complete and verified!
 <img width="999" height="1001" alt="image" src="https://github.com/user-attachments/assets/1ee665a2-192a-46a2-bf6b-0bc1218883b5" />
-
 ---
 
-### 🌐 Step 4: Configure IP Addresses
-To make the network functional, we need to establish static IP routing.
-
----
-|  Device  |  IP Address  |  Subnet Mask  |  Default Gateway  |
-|  :---  |  :---  |  :---  |  :---  |
-|  Server  |  192.168.1.10  |  255.255.255.0  |  192.168.1.1  |
-|  PC0  |  192.168.1.20  |  255.255.255.0  |  192.168.1.1  |
----
-
-### 🖥️ Step 5: Configure the Server IP
+### 🖥️ Step 4: Configure the Server IP
 1. Click on your Server -> Go to the Desktop tab -> Open IP Configuration.
 2. Fill in these static numbers exactly:
    1. IP Address: 192.168.1.10
@@ -75,8 +67,10 @@ To make the network functional, we need to establish static IP routing.
 <img width="750" height="985" alt="image" src="https://github.com/user-attachments/assets/9aabc800-24b0-4581-a4b8-4469b827d076" />
 
 ---
+## Phase 2:
+---
 
-### ⌨️ Step 5: Set Up the Switch Hostname and Management IP
+### ⌨️ Step 1: Set Up the Switch Hostname and Management IP
 Now let's program the switch so it has an identity and a network address that our workstations can reach.
 1. Click on your Switch and navigate to the CLI tab.
 2. Press Enter once to bring up the Switch> prompt.
@@ -95,10 +89,10 @@ write memory
 <img width="758" height="465" alt="image" src="https://github.com/user-attachments/assets/e22c097b-6247-46b4-be72-12cc2d6180db" />
 
 ---
-### 🧪 Step 3: Run the First Connectivity Test
+### 🧪 Step 2: Run the First Connectivity Test
 Let's make sure the switch and server can speak across the wire.
-1. Click on the Server -> Go to the Desktop tab -> Open the Command Prompt.T
-2. ype this ping command to test the path to the switch:cmd
+1. Click on the Server -> Go to the Desktop tab -> Open the Command Prompt.
+2. Type this ping command to test the path to the switch in the command prompt:
 ```
 ping 192.168.1.1
 ```
@@ -106,8 +100,6 @@ ping 192.168.1.1
 
 *Having four successful replies back, show my infrastructure coordinates are perfect.*
 
----
-## Phase 3:
 ---
 
 ### 🌐 Step 1: Turn on DHCP (IP Address Distribution)
@@ -182,8 +174,10 @@ Now let's scroll down slightly on that same screen to the User Setup section. We
 <img width="752" height="904" alt="image" src="https://github.com/user-attachments/assets/6c8f23f3-1d0b-47d6-810c-a0ec7d241229" />
 
 ---
+### Phase 4
+---
 
-### 🧪 Step 3: Configure the Network Printer for DHCP
+### 🧪 Step 1: Configure the Network Printer for DHCP
 Since our user database is ready, let's also make sure your office Printer is online before we lock down the switch security profiles.
 1. Click on your Printer asset (on Port 6).
 2. Go to the Config tab -> Click on FastEthernet0 on the left menu.
@@ -192,10 +186,8 @@ Since our user database is ready, let's also make sure your office Printer is on
 <img width="737" height="902" alt="image" src="https://github.com/user-attachments/assets/7f89eed9-c051-4570-b8b7-66be72713164" />
 
 ---
-### Phase 4
----
 
-### 🖥️ Step 1: Add the Main Website Home Page
+### 🖥️ Step 2: Add the Main Website Home Page
 1. Click on your Server and navigate to the Services tab at the top.
 2. Select HTTP from the left-hand column menu.
 3. Ensure both HTTP and HTTPS toggles are set to ON.
@@ -217,7 +209,7 @@ Since our user database is ready, let's also make sure your office Printer is on
 
 ---
 
-### 🖨️ Step 2: Create the Printing Status Dashboard Page
+### 🖨️ Step 3: Create the Printing Status Dashboard Page
 Now let's build the dedicated webpage that displays your active printing network statistics.
 1. While still inside the Server's HTTP file manager, click the New File link (usually located at the very top or bottom of the file repository list).
 2. For the file name, type exactly: printer.html
@@ -244,7 +236,7 @@ Now let's build the dedicated webpage that displays your active printing network
 4. Click the Save button and select Yes to secure the document.
 ---
 
-### 🧪 Step 3: Browse the Dashboard from Your PCs
+### 🧪 Step 4: Browse the Dashboard from Your PCs
 Let's make sure the website and links load up flawlessly across your workstations.
 1. Click on PC 0 (or any of your 3 PCs) -> Go to the Desktop tab -> Open the Web Browser application.
 2. In the URL bar at the top, type your friendly address and hit Enter:
@@ -324,9 +316,10 @@ The switch will immediately reject the input and say Bad secrets or "% Invalid i
 
 ---
 
-Let’s scale up my network infrastructure! I will be adding 3 new PC's and 3 new employee accounts. Testing how an environment handles growth is an excellent way to prove that my architecture can support a expanding corporate business.
+**Let’s scale up my network infrastructure! I will be adding 3 new PC's and 3 new employee accounts. Testing how an environment handles growth is an excellent way to prove that my architecture can support a expanding corporate business.**
 
-Because I engineered the system with automated DHCP and centralized AAA, adding more devices and users will be rapid and seamless.
+**Because I engineered the system with automated DHCP and centralized AAA, adding more devices and users will be rapid and seamless.**
+
 ---
 
 ### 🖥️ Step 1: Scale the Hardware Layout (Add 3 More PCs)
@@ -383,12 +376,11 @@ Your prompt will instantly change to Core-Switch-01#, granting Jane Smith full a
 
 ### Phase 6:
 ---
-# Scenario 1:
+## 🚨 Multi-Stage Attack & Defense Scenarios
 
-Global Bank just did renovation of her newly acquired building. During the renovation the IT department felt it was better to trunk and terminate all cables directly into an internet faceplate.
-
-A threat actor (Hacker) discovered a vulnerability:
-1. DHCP configuration of the IP system of the bank.
+## Scenario A: Peripheral Port Penetration (Port Security)
+* **The Physical Attack:** An outside actor disconnected the corporate printer from its physical wall drop on port Fa0/6 and inserted an unauthorized hacker laptop to sneak packets onto the network.
+*  **The Automated Defense:** Interface Fa0/6 was hardcoded with Cisco Port Security and Sticky MAC learning. The switch recognized that the laptop's physical identity did not match the printer's authorized fingerprint. The switch instantly logged a security violation, killed electrical power to the wire, and slammed the port into an err-disabled shutdown state.
 ---
 ### 🛡️ Next Milestone: Let's Run the Port Security Attack!
 Now that my network has successfully scaled up to 6 workstations, has 4 distinct user accounts, and is completely stable, my infrastructure is perfectly prepared for the final security challenge.
@@ -402,7 +394,8 @@ Let's simulate the physical cyber attack on your printer port (Port 6) to make s
 <img width="955" height="997" alt="image" src="https://github.com/user-attachments/assets/f874bbf1-1121-4c44-8871-a3606a062af4" />
 
 ---
-### 💥 Step 2: Fire the Malicious PacketFor the switch to catch the intruder, the hacker laptop must transmit data down the wire so the switch can inspect its hardware fingerprint.
+### 💥 Step 2: Fire the Malicious Packet
+For the switch to catch the intruder, the hacker laptop must transmit data down the wire so the switch can inspect its hardware fingerprint.
 1. Click on the Hacker_Laptop and navigate to the Desktop tab.
 2. Open the Command Prompt application.
 3. Type the attack command to generate traffic toward your private network server:
@@ -413,15 +406,14 @@ ping 192.168.1.10
 <img width="742" height="457" alt="image" src="https://github.com/user-attachments/assets/926edf55-e04b-41fe-ab04-e525833877e0" />
 
 ---
-
-Now, we are going to set the trap. We are going to turn port security back on right now while the hacker is still plugged into Port 6. We will tell the switch to dynamically memorize the very next device that talks. Right now, that's the hacker.
+Now, we are going to set the trap. We are going to turn port security on right now while the hacker is still plugged into Port 6. We will tell the switch to dynamically memorize the very next device that talks. Right now, that's the hacker.
 
 But then, we will swap the cable back to the legitimate Printer and watch the printer trigger the shutdown! This is a great way to see the switch catch an anomaly because the switch will think the printer is the "intruder" since it learned the hacker first.
 
 ---
 
 ### 🛠️ Step 1: Arm the Trap on Port 6
-Click on your Switch, open the CLI tab, and enter these commands exactly to turn security back on:
+Click on your Switch, open the CLI tab, and enter these commands exactly to turn security on:
 ```
 configure terminal
 interface fastethernet 0/6
@@ -450,7 +442,7 @@ ping 192.168.1.10
 
 ---
 
-The switch has successfully memorised the MAC address 000C.CFCD.5032 on port Fa0/6. Because the hacker laptop was the active device that sent the last ping, that unique signature belongs to the hacker laptop! The switch now firmly believes that the hacker is the only trusted device allowed on that port.
+The switch has successfully memorised the MAC address 000C.CFCD.5032 on port Fa0/6. Because the hacker laptop was the active device that sent the last ping, that unique signature belongs to the hacker laptop! 
 
 Now, we are going to spring the trap by plugging the Printer back into that wire. Since the printer has a completely different MAC address, the switch will flag it as an unauthorized intruder and lock down the line.
 
@@ -474,8 +466,9 @@ The exact millisecond the printer attempts to broadcast its hardware footprint t
 
 ---
 
-### Scenario: The Unsecured Switch Port Vulnerability
-1. The Incident & TroubleshootingThe ICT Department received a critical helpdesk ticket reporting that a network printer was completely unresponsive and failing to print. An IT representative was dispatched to investigate.
+## Scenario B: The Unsecured Switch Port Vulnerability
+### 1. The Incident & Troubleshooting
+The ICT Department received a critical helpdesk ticket reporting that a network printer was completely unresponsive and failing to print. An IT representative was dispatched to investigate.
 
 After several hours of extensive troubleshooting—including restarting the print spooler, checking drivers, and cycling the power—the technician decided to test the physical layer.  He unplugged the printer's network cable from the dead interface and plugged it into Switch Port 9 (from its original wall jack and plugged it into a different, adjacent network port on the wall).
 
@@ -484,13 +477,15 @@ Immediately, the printer pulled a new connection and started printing successful
 ### 2. The Security Blind Spot (The Hacker's Discovery)
 Unbeknownst to the IT representative, the successful troubleshooting step revealed a major security flaw. A hacker conducting internal reconnaissance on the network noticed the same thing: multiple unused network ports across the office were fully active and patched directly into the core switch.
 
-The hacker discovered that they could simply plug a rogue laptop into any vacant wall port or change their connection to another open switch port. So the hacker plugged a rogue laptop into Port 10 and instantly gained unrestricted access to the internal network.  Because these ports were left open and unmonitored, the hacker gained unrestricted access to the internal network, allowing them to bypass physical security boundaries and begin sniffing network traffic.
+The hacker discovered that he could simply plug a rogue laptop into any vacant wall port or change their connection to another open switch port. So the hacker plugged a rogue laptop into Port 10 and instantly gained unrestricted access to the internal network.  Because these ports were left open and unmonitored, the hacker gained unrestricted access to the internal network, allowing them to bypass physical security boundaries and begin sniffing network traffic.
 
 ### 3. The Solution: Hardening the Network Switch
 
 To remediate this vulnerability, the ICT department must implement a strict port-security policy. While Port 9 remains enabled for the printer, all other unused interfaces—including the exploited Port 10—must be administratively shut down.
 
-Here is the configuration to secure the switch (assuming a standard 24-port Cisco switch):
+---
+
+### Here is the configuration to secure the switch (assuming a standard 24-port Cisco switch):
 ```
 ! Access the switch configuration mode
 Switch# configure terminal
@@ -523,18 +518,19 @@ This completes the baseline defensive design for an enterprise network: Only aut
 
 <img width="1143" height="1023" alt="image" src="https://github.com/user-attachments/assets/e4cc4cb1-f0c4-495d-9ddb-dbefdc535836" />
 
-Best Practices Implemented
+## Best Practices Implemented
 * **Network Hardening:** Unused ports no longer provide an open invitation to attackers.
 * **Change Control:** If a user needs a new port activated in the future, it must go through an official ICT request, ensuring full visibility of all connected devices.
 
 ---
 
-### Scenario: The Malicious Insider & Network Sniffer
-A senior systems administrator, passed over for a major promotion, decides to monetize corporate intellectual property by capturing unencrypted traffic directly from the local area network (LAN). Using his elevated administrative privileges, they install a software-based packet sniffer (such as Wireshark or tcpdump) on a core staging server. Because the company's internal database replication traffic is natively unencrypted, the admin successfully captures proprietary source code, customer records, and corporate strategy files passing over the wire. They then quietly exfiltrate these PCAP (packet capture) files to a personal cloud storage account and sell them directly to the company's primary market competitor.
+### Scenario C: The Malicious Insider & Network Sniffer
+* **The Internal Threat:** A disgruntled senior systems administrator used their privileges to deploy a Switch Port Analyzer (SPAN) monitor session. They mirrored port Fa0/13 (Database Staging) over to a secret packet sniffer on port Fa0/11. Because the network used legacy unencrypted protocols (HTTP and Telnet), the insider successfully harvested administrative login passwords and database queries character-by-character.
+* **The Incident Response:** The security team audited active sessions, caught the unauthorized connection originating from PC 0 (connected to port Fa0/1), and executed an emergency administrative interface shutdown on port Fa0/1, freezing the malicious admin's terminal.
+* **The Encrypted Hardening:** Eradicated the vulnerability by generating 1024-bit asymmetric RSA cryptographic keys on the switch, upgrading lines to SSH Version 2, and completely disabling clear-text HTTP services in favor of HTTPS. Subsequent sniffer captures proved that all administrative and web logs were scrambled into unreadable mathematical noise.
 
-This is a classic Insider Threat and Data Exfiltration blueprint. It perfectly illustrates why organizations cannot rely on perimeter defenses alone—if a user already holds legitimate administrative access, they can manipulate internal routing and monitoring systems from the inside.
 
-Let's build this scenario directly into my Packet Tracer lab using a dedicated database staging server to model how this data harvest occurs and how to mathematically neutralize it.
+### Let's build this scenario directly into my Packet Tracer lab using a dedicated database staging server to model how this data harvest occurs and how to mathematically neutralize it.
 ---
 
 ### 🗄️ Step 1: Deploy the Database Staging Infrastructure
@@ -613,9 +609,10 @@ By analyzing this specific text file, an incident response team can trace exactl
 * **How they got it:** Over an open, unencrypted network path.
 
 I have now successfully captured, read, and verified the insider threat's traffic payload! This completely confirms the data harvesting phase of my custom cyber scenario.
+
 ---
 
-### Scenario: The Apprehension and System Hardening
+## The Apprehension and System Hardening
 This incident response scenario perfectly demonstrates the full lifecycle of security operations: **Detection, Containment, Eradication, and Hardening.**
 
 ### 🚨 The Incident Response Scenario: The Insider is Caught
@@ -652,6 +649,9 @@ By typing interface fastethernet 0/1 followed by shutdown, the security engineer
 
 It is the fastest way to achieve network containment during an active cyber breach!
 ```
+Your data is now 100% secure from internal and external eavesdroppers!
+With the threat contained, the engineering team immediately transitions to emergency remediation—transitioning legacy configurations to encrypted standards (HTTPS and SSH) to ensure that any future sniffing attempts yield nothing but unreadable data.
+
 ### 🛡️ The Hardening Phase: Activating Global Encryption
 Now that the threat is removed, let's fix the structural vulnerability by encrypting all traffic loops.
 
@@ -703,6 +703,4 @@ Let's verify how the encryption defenses look to a hacker or another rogue sniff
 
 * Click on any of those new packets and scroll to the bottom text window. Instead of readable English text, usernames, or paths, the data payload field is completely filled with a scrambled, chaotic block of mathematical gibberish.
 
-Your data is now 100% secure from internal and external eavesdroppers!
-With the threat contained, the engineering team immediately transitions to emergency remediation—transitioning legacy legacy configurations to encrypted standards (HTTPS and SSH) to ensure that any future sniffing attempts yield nothing but unreadable data.
 ---
