@@ -1,4 +1,4 @@
-## automated-enterprise-network-simulation
+## Enterprise_Hardened_LAN_AD_Secure
 
 Scalable branch office architecture featuring central AAA/RADIUS, DHCP distribution pools, DNS web infrastructure, RADIUS Identity Governance, and Layer-2 Mitigation of Insider Threat Vectors.
 
@@ -704,3 +704,19 @@ Let's verify how the encryption defenses look to a hacker or another rogue sniff
 * Click on any of those new packets and scroll to the bottom text window. Instead of readable English text, usernames, or paths, the data payload field is completely filled with a scrambled, chaotic block of mathematical gibberish.
 
 ---
+
+### 🛠️ Simulation Glitches & Technical Workarounds
+* **The Sticky MAC Address Caching Bug:** During hot-swap simulation testing, the switch failed to flag the attacker laptop when connected to port 6. Packet Tracer's software table indefinitely cached the initial printer identity without registering physical disconnect events. This was mitigated by cycling the interface (shutdown followed by no shutdown) while the laptop was attached, forcing the switch to process the new hardware signature immediately.
+* **The Shared HTTP/HTTPS Simulation Pool:** Disabling standard HTTP while leaving HTTPS enabled on the server occasionally allowed unencrypted web packets to leak through with text headers visible. This occurred because Packet Tracer runs both settings under a unified background daemon engine. The problem was mitigated by completely deleting the custom database dashboard source files off the unencrypted server manager panel, leaving no readable data strings for an attacker to intercept.
+* **AAA Radius Server Executive Level Overrides:** The external RADIUS directory forced a Privilege 15 level token upon login, bypassing local line constraints for junior operators. This command execution anomaly was resolved by deploying aaa authorization exec default local, ensuring the switch hardware cross-referenced local line configurations before executing privilege escalation.
+
+---
+
+### 🧠 Engineering Takeaways & Lessons Learned
+* **The Absolute Vulnerability of Plain-Text Traffic:** Setting up the live network sniffer and physically watching administrative credentials separate frame-by-frame proved how dangerous legacy configurations can be. Unencrypted protocols convert an internal network into an open book; cryptographic frameworks like SSH v2 and HTTPS are mandatory baseline requirements for modern infrastructure.
+* **Perimeter Security Alone is Ineffective:** Relying entirely on a border firewall provides zero security against internal security threats or physical port manipulation. True network resilience requires a strict Defense-in-Depth model, combining physical interface lockouts and attack surface reduction with role-based access controls.
+* **The Imperative of State Serialization:** Any operational changes or security updates made to active network devices are immediately lost during unplanned drops or system closures. Establishing a strict engineering habit around running write memory to commit the active configuration cache to non-volatile storage is crucial to building resilient networks.
+---
+
+### 🏁 Project Conclusion
+This security engineering project successfully demonstrates the deployment, testing, containment, and hardening lifecycle of a secure corporate local area network subnet. By engineering centralized directory infrastructures, automating local numbering assignments, and embedding strict physical port protections tightly into the core switching matrix, internal and external threat vectors were entirely neutralized. The resulting framework provides a fully audited, highly resilient, and enterprise-hardened network deployment.
