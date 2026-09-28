@@ -720,3 +720,8 @@ Let's verify how the encryption defenses look to a hacker or another rogue sniff
 
 ### 🏁 Project Conclusion
 This security engineering project successfully demonstrates the deployment, testing, containment, and hardening lifecycle of a secure corporate local area network subnet. By engineering centralized directory infrastructures, automating local numbering assignments, and embedding strict physical port protections tightly into the core switching matrix, internal and external threat vectors were entirely neutralized. The resulting framework provides a fully audited, highly resilient, and enterprise-hardened network deployment.
+---
+
+Click here to download the [Enterprise_Hardened_LAN_AD_Secure](topology.pkt).
+
+---
